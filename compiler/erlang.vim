@@ -78,12 +78,15 @@ function! s:ClearErrors()
 endfunction
 
 function! s:EnableShowErrors()
+    if !exists("s:erlang_autocommands_set")
+        let s:erlang_autocommands_set = 1
     autocmd BufWritePost *.erl call s:ShowErrors()
     autocmd CursorHold   *.erl call s:ShowErrorMsg()
     autocmd CursorMoved  *.erl call s:ShowErrorMsg()
 endfunction
 
 function! s:DisableShowErrors()
+    unlet s:erlang_autocommands_set
     sign unplace *
     autocmd! BufWritePost *.erl
     autocmd! CursorHold   *.erl
