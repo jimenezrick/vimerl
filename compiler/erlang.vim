@@ -4,7 +4,7 @@
 " Contributors: Ricardo Catalinas Jiménez <jimenezrick@gmail.com>
 " Version:      2011/12/14
 
-if exists("current_compiler")
+if exists("current_compiler") || exists(":SyntasticCheck")
     finish
 else
     let current_compiler = "erlang"
