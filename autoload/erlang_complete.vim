@@ -19,7 +19,11 @@ endif
 let s:erlang_complete_file = expand('<sfile>:p:h') . '/erlang_complete.erl'
 
 " Man pages path
-let s:erlang_man_path = system("grep ^ROOTDIR= $(which erl) | sed 's/^.*=//'")[:-2] . '/man'
+if substitute(system('uname'), "\n", "", "") == "Darwin"
+    let s:erlang_man_path = system("grep ^ROOTDIR= $(which erl) | sed 's/^.*=//' | sed 's/\\/lib\\/erlang$//'")[:-2] . '/share/man'
+else
+    let s:erlang_man_path = system("grep ^ROOTDIR= $(which erl) | sed 's/^.*=//'")[:-2] . '/man'
+endif
 
 " Modules cache used to speed up the completion
 let s:modules_cache = {}
