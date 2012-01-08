@@ -188,11 +188,19 @@ functions are shown when using omni completion (default: 1, values: 0 or 1): >
 ==============================================================================
 5. License                                                    *vimerl-license*
 
-Several people have contributed to this plugin (see AUTHORS file), so it
-should be necessary to ask everybody about how its code is licensed. Anyway,
-assume that this is free software.
+Several people have contributed to this plugin (see AUTHORS file).
 
-Use, copy or modify this code freely. At least try to preserve the names of
-the authors who have participated.
+    Vimerl is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Vimerl is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Vimerl.  If not, see <http://www.gnu.org/licenses/>.
 
  vim:tw=78:ts=8:ft=help:norl:

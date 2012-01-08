@@ -2,9 +2,37 @@
 " Language:     Erlang
 " Author:       Csaba Hoch <csaba.hoch@gmail.com>
 " Contributors: Edwin Fine <efine145_nospam01 at usa dot net>
+"               Oscar Hellström
 "               Pawel 'kTT' Salata <rockplayer.pl@gmail.com>
 "               Ricardo Catalinas Jiménez <jimenezrick@gmail.com>
+"               Jonas Ådahl
 " Version:      2011/09/06
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"
+" Copyright 2008       Csaba Hoch
+" Copyright 2008, 2010 Oscar Hellström
+" Copyright 2010       Jonas Ådahl
+" Copyright 2010, 2011 Ricardo Catalinas Jiménez
+" Copyright 2011       Edwin Fine
+" Copyright 2011       Pawel 'kTT' Salata
+"
+" This file is part of Vimerl.
+"
+" Vimerl is free software: you can redistribute it and/or modify
+" it under the terms of the GNU General Public License as published by
+" the Free Software Foundation, either version 3 of the License, or
+" (at your option) any later version.
+"
+" Vimerl is distributed in the hope that it will be useful,
+" but WITHOUT ANY WARRANTY; without even the implied warranty of
+" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the-
+" GNU General Public License for more details.
+"
+" You should have received a copy of the GNU General Public License
+" along with Vimerl.  If not, see <http://www.gnu.org/licenses/>.
+"
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Only load this indent file when no other was loaded
 if exists("b:did_indent")
