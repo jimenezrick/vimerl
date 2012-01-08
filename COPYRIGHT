@@ -1,0 +1,38 @@
+ Copyright for files in Vimerl
+-------------------------------
+
+autoload/erlang_complete.erl:
+    Copyright (c) 2010 Pawel 'kTT' Salata
+    Copyright (c) 2011 Ricardo Catalinas Jimenéz
+
+autoload/erlang_complete.vim:
+    Copyright (c) 2007 Oscar Hellström
+    Copyright (c) 2010 Pawel 'kTT' Salata
+    Copyright (c) 2011 Ricardo Catalinas Jiménez
+    Copyright (c) 2011 Eduardo Lopez
+
+compiler/*:
+    Copyright (c) 2010 Pawel 'kTT' Salata
+    Copyright (c) 2011 Ricardo Catalinas Jiménez
+
+ftplugin/erlang.vim:
+    Copyright (c) 2007 Oscar Hellström
+    Copyright (c) 2010, 2011 Ricardo Catalinas Jiménez
+    Copyright (c) 2011 Eduardo Lopez
+
+indent/erlang.vim:
+    Copyright (c) 2008 Csaba Hoch
+    Copyright (c) 2008, 2010 Oscar Hellström
+    Copyright (c) 2010 Jonas Ådahl
+    Copyright (c) 2010, 2011 Ricardo Catalinas Jiménez
+    Copyright (c) 2011 Edwin Fine
+    Copyright (c) 2011 Pawel 'kTT' Salata
+
+plugin/erlang_skel.vim:
+    Copyright (c) 2011 Ricardo Catalinas Jiménez
+
+syntax/erlang.vim:
+    Copyright (c) 2007 Oscar Hellström
+    Copyright (c) 2010 Phillip Toland
+    Copyright (c) 2011 Ricardo Catalinas Jiménez
+    Copyright (c) 2011 Eduardo Lopez
