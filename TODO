@@ -1,2 +1,10 @@
-- Fix indentation algorithm to parse correctly `try..of..catch..after..end'.
-- Review indent file from branch experimental-indent-aszlig
+- Fix indentation algorithm to parse correctly:
+  `try..of..catch..after..end'.
+- Review indent file from branch experimental-indent-aszlig.
+- Document what info is taken from `rebar.config' and that Vim should be
+  started from the project root dir, where src/, ebin/ and include/ are
+  visible.
+- Use Edoc to extract the functions headers instead using grep over man
+  pages.
+- Don't compile modules for omni completion, let the user compile its
+  project and then, Vimerl will use the .beam files.

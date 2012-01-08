@@ -4,31 +4,8 @@
 " Contributors: kTT (http://github.com/kTT)
 "               Ricardo Catalinas Jiménez <jimenezrick@gmail.com>
 "               Eduardo Lopez (http://github.com/tapichu)
+" License:      GNU GPL version 3
 " Version:      2011/09/29
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"
-" Copyright 2007 Oscar Hellström
-" Copyright 2010 Pawel 'kTT' Salata
-" Copyright 2011 Ricardo Catalinas Jiménez
-" Copyright 2011 Eduardo Lopez
-"
-" This file is part of Vimerl.
-"
-" Vimerl is free software: you can redistribute it and/or modify
-" it under the terms of the GNU General Public License as published by
-" the Free Software Foundation, either version 3 of the License, or
-" (at your option) any later version.
-"
-" Vimerl is distributed in the hope that it will be useful,
-" but WITHOUT ANY WARRANTY; without even the implied warranty of
-" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
-" GNU General Public License for more details.
-"
-" You should have received a copy of the GNU General Public License
-" along with Vimerl.  If not, see <http://www.gnu.org/licenses/>.
-"
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Completion options
 if !exists('g:erlang_completion_grep')
