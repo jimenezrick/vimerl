@@ -10,7 +10,11 @@ main([File]) ->
             warn_unused_import,
             report,
             {i, Dir ++ "/include"},
-            {i, Dir ++ "/../include"}],
+            {i, Dir ++ "/../include"},
+            {i, Dir ++ "/../../include"},
+            {i, Dir ++ "/../../../include"},
+            {i, Dir ++ "/../../../../include"},
+            {i, Dir ++ "/../../../../../include"}],
     case file:consult("rebar.config") of
         {ok, Terms} ->
             RebarDeps = proplists:get_value(deps_dir, Terms, "deps"),
