@@ -7,7 +7,14 @@ main([ModName]) ->
     case file:consult("rebar.config") of
         {ok, Terms} ->
             RebarDeps = proplists:get_value(deps_dir, Terms, "deps"),
-            code:add_paths(filelib:wildcard(RebarDeps ++ "/*/ebin"));
+            code:add_paths(filelib:wildcard(RebarDeps ++ "/*/ebin")),
+            RebarLibDirs = proplists:get_value(lib_dirs, Terms, []),
+            lists:foreach(
+                fun (LibDir) ->
+                    code:add_pathsz(filelib:wildcard(LibDir ++ "/*/ebin"))
+                end,
+                RebarLibDirs
+            );
         _ ->
             ok
     end,
