@@ -14,7 +14,11 @@ if !exists('g:erlang_skel_replace')
 	let g:erlang_skel_replace = 1
 endif
 
-let s:skels_dir = expand('<sfile>:p:h') . '/erlang_skels'
+if !exists('g:erlang_skel_dir')
+	let g:erlang_skel_dir = expand('<sfile>:p:h') . '/erlang_skels'
+endif
+
+let s:skels_dir = g:erlang_skel_dir
 
 function s:LoadSkeleton(skel_name)
 	if g:erlang_skel_replace
