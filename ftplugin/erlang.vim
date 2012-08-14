@@ -47,6 +47,13 @@ function s:SetErlangOptions()
 
 	setlocal formatoptions+=ro
 	let &l:keywordprg = g:erlang_keywordprg
+
+        " Use gf to navigate to the module under the cursor.
+        " This could probably be smarter as it could use erlang itself
+        " to retrieve all the code paths available.
+        setlocal sua+=.erl
+        let erlang_path=substitute(system("which erl"), "/bin/erl", "/lib/**/src/", "")
+        exe ":setlocal path+="."src/,deps/**/src/,".erlang_path
 endfunction
 
 function GetErlangFold(lnum)
