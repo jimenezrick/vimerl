@@ -1,6 +1,7 @@
 " Erlang refactor file
 " Language: Erlang
 " Maintainer: Pawel 'kTT' Salata <rockplayer.pl@gmail.com>
+" Maintainer: Enrique Paz <quiquepaz@gmail.com>
 " URL: http://ktototaki.info
 
 if exists("b:did_ftplugin_erlang")
@@ -43,12 +44,18 @@ endfunction
 " Sending rpc call to erlang session
 function! s:send_rpc(module, fun, args)
     let command = "erl_call -sname " . s:erlangServerName . " -a '" . a:module . " " . a:fun . " " . a:args . "'"
-    echo command
+"    echo command
     let result = system(command)
-    echo result
+"    echo result
     if match(result, 'erl_call: failed to connect to node .*') != -1
-        call StartWranglerServer()
-        return system(command)
+        if a:fun == "halt"
+            " If the function called was 'halt' we assume the wrangler server
+            " needs to be stopped, so we don't need to start it first.
+            return
+        else
+            call StartWranglerServer()
+            return system(command)
+        endif
     endif
     return result
 endfunction
@@ -57,6 +64,7 @@ function! ErlangUndo()
     echo s:send_rpc("wrangler_undo_server", "undo", "[]")
     :e!
 endfunction
+nmap <C-w>u :call ErlangUndo()<ENTER>
 
 function! s:trim(text)
     return substitute(a:text, "^\\s\\+\\|\\s\\+$", "", "g")
@@ -90,21 +98,11 @@ endfunction
 
 " Sending apply changes to file
 function! s:send_confirm()
-    let choice = confirm("What do you want?", "&Preview\n&Confirm\nCa&ncel", 0)
-    if choice == 1
-        echo "TODO: Display preview :)"
-    elseif choice == 2
-        let module = 'wrangler_preview_server'
-        let fun = 'commit'
-        let args = '[]'
-        return s:send_rpc(module, fun, args)
-    else
-        let module = 'wrangler_preview_server'
-        let fun = 'abort'
-        let args = '[]'
-        return s:send_rpc(module, fun, args)
-        echo "Canceled"
-    endif
+    let any = getchar()
+    let module = 'wrangler_preview_server'
+    let fun = 'commit'
+    let args = '[]'
+    return s:send_rpc(module, fun, args)
 endfunction
 
 " Manually send confirm, for testing purpose only
@@ -124,7 +122,7 @@ function! s:call_extract(start_line, start_col, end_line, end_col, name)
         call confirm(msg)
         return 0
     endif
-    echo "This files will be changed: " . matchstr(msg, "[^]]*", 1)
+    echo "\nThese files will be changed: " . matchstr(msg, "[^]]*", 1)
     echo s:send_confirm()
     return 1
 endfunction
@@ -163,8 +161,8 @@ function! ErlangExtractFunction(mode) range
         echo "Empty function name. Ignoring."
     endif
 endfunction
-nmap <A-r>e :call ErlangExtractFunction("n")<ENTER>
-vmap <A-r>e :call ErlangExtractFunction("v")<ENTER>
+nmap <C-w>e :call ErlangExtractFunction("n")<ENTER>
+vmap <C-w>e :call ErlangExtractFunction("v")<ENTER>
 
 function! s:call_rename(mode, line, col, name, search_path)
     let file = expand("%:p")
@@ -174,14 +172,14 @@ function! s:call_rename(mode, line, col, name, search_path)
     if a:mode != "mod"
          let args = args . a:line . ', ' . a:col . ', '
     endif
-    let args = args . '"' . a:name . '", ["' . a:search_path . '"], command, ' . &sw . ']'
+    let args = args . '"' . a:name . '", ["' . a:search_path . '"], emacs, ' . &sw . ']'
     let result = s:send_rpc(module, fun, args)
     let [error_code, msg] = s:check_for_error(result)
     if error_code != 0
         call confirm(msg)
         return 0
     endif
-    echo "This files will be changed: " . matchstr(msg, "[^]]*", 1)
+    echo "\nThese files will be changed: " . matchstr(msg, "[^]]*", 1)
     echo s:send_confirm()
     return 1
 endfunction
@@ -200,13 +198,14 @@ function! ErlangRename(mode)
         let line = pos[1]
         let col = pos[2]
         let current_filename = expand("%")
-        let current_filepath = expand("%:p")
-        let new_filename = name . '.erl'
+        let full_current_filename = expand("%:p")
+        let current_filepath = expand("%:p:h")
+        let new_filename = current_filepath . "/" .name . '.erl'
         if s:call_rename(a:mode, line, col, name, search_path)
             if a:mode == "mod"
-                execute ':bd ' . current_filename
+                execute ':bd'
                 execute ':e ' . new_filename
-                silent execute '!mv ' . current_filepath . ' ' . current_filepath . '.bak'
+                silent execute '!rm ' . current_filepath . '/*.swp'
                 redraw!
             else
                 let temp = &autoread
@@ -225,22 +224,22 @@ endfunction
 function! ErlangRenameFunction()
     call ErlangRename("fun")
 endfunction
-map <A-r>f :call ErlangRenameFunction()<ENTER>
+map <C-w>f :call ErlangRenameFunction()<ENTER>
 
 function! ErlangRenameVariable()
     call ErlangRename("var")
 endfunction
-map <A-r>v :call ErlangRenameVariable()<ENTER>
+map <C-w>v :call ErlangRenameVariable()<ENTER>
 
 function! ErlangRenameModule()
     call ErlangRename("mod")
 endfunction
-map <A-r>m :call ErlangRenameModule()<ENTER>
+map <C-w>m :call ErlangRenameModule()<ENTER>
 
 function! ErlangRenameProcess()
     call ErlangRename("process")
 endfunction
-map <A-r>p :call ErlangRenameProcess()<ENTER>
+map <C-w>p :call ErlangRenameProcess()<ENTER>
 
 function! s:call_tuple_fun_args(start_line, start_col, end_line, end_col, search_path)
     let file = expand("%:p")
@@ -291,5 +290,5 @@ function! ErlangTupleFunArgs(mode)
         echo "Mode not supported."
     endif
 endfunction
-nmap <A-r>t :call ErlangTupleFunArgs("n")<ENTER>
-vmap <A-r>t :call ErlangTupleFunArgs("v")<ENTER>
+nmap <C-w>t :call ErlangTupleFunArgs("n")<ENTER>
+vmap <C-w>t :call ErlangTupleFunArgs("v")<ENTER>
