@@ -156,6 +156,10 @@ Loads an OTP gen_fsm skeleton: >
                                                              *:ErlangGenEvent*
 Loads an OTP gen_event skeleton: >
 	:ErlangGenEvent
+<
+                                                           *:ErlangCommonTest*
+Loads an OTP common_test skeleton: >
+	:ErlangCommonTest
 
 Note: all the previous commands are applied to the current buffer.
 
