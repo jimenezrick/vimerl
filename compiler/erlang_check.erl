@@ -13,7 +13,25 @@ main([File]) ->
             {i, Dir ++ "/../include"},
             {i, Dir ++ "/../../include"},
             {i, Dir ++ "/../../../include"}],
-    case file:consult("rebar.config") of
+    RebarFile = rebar_file(Dir),
+    RebarOpts = rebar_opts(RebarFile),
+    code:add_patha(filename:absname("ebin")),
+    compile:file(File, Defs ++ RebarOpts);
+main(_) ->
+    io:format("Usage: ~s <file>~n", [escript:script_name()]),
+    halt(1).
+
+rebar_file(Dir) ->
+    DirList = filename:split(Dir),
+    case lists:last(DirList) of
+        "test" ->
+            "rebar.test.config";
+        _ ->
+            "rebar.config"
+    end.
+
+rebar_opts(RebarFile) ->
+   case file:consult(RebarFile) of
         {ok, Terms} ->
             RebarLibDirs = proplists:get_value(lib_dirs, Terms, []),
             lists:foreach(
@@ -22,12 +40,10 @@ main([File]) ->
                 end, RebarLibDirs),
             RebarDepsDir = proplists:get_value(deps_dir, Terms, "deps"),
             code:add_pathsa(filelib:wildcard(RebarDepsDir ++ "/*/ebin")),
-            RebarOpts = proplists:get_value(erl_opts, Terms, []);
+            proplists:get_value(erl_opts, Terms, []);
+        {error, _} when RebarFile == "rebar.config" ->
+            [];
         {error, _} ->
-            RebarOpts = []
-    end,
-    code:add_patha(filename:absname("ebin")),
-    compile:file(File, Defs ++ RebarOpts);
-main(_) ->
-    io:format("Usage: ~s <file>~n", [escript:script_name()]),
-    halt(1).
+            rebar_opts("rebar.config")
+    end.
+
