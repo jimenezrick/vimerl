@@ -27,7 +27,7 @@ if !exists('g:erlang_folding')
 	let g:erlang_folding = 0
 endif
 
-let s:erlang_fun_begin = '^\a\w*(.*$'
+let s:erlang_fun_begin = '^\(\a\w*\|[''][^'']*['']\)(.*$'
 let s:erlang_fun_end   = '^[^%]*\.\s*\(%.*\)\?$'
 
 function s:SetErlangOptions()
