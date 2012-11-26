@@ -139,17 +139,7 @@ function s:ErlangFindExternalFunc(module, base)
 		endif
 	endfor
 
-	" Write all the module functions to the cache file
-	if has_key(s:modules_cache, a:module)
-		let func_list = get(s:modules_cache, a:module)
-		if len(func_list) > 0
-			let cache_entry = {a:module : func_list}
-			execute 'redir >>' . s:file_cache
-			silent echon cache_entry
-			silent echon "\n"
-			redir END
-		endif
-	endif
+	call s:WriteCache(a:module)
 
 	return []
 endfunction
@@ -192,5 +182,41 @@ function s:ErlangLoadCache()
 	endif
 endfunction
 
+function s:WriteCache(module)
+	" Write all the module functions to the cache file
+	if has_key(s:modules_cache, a:module)
+		let func_list = get(s:modules_cache, a:module)
+		if len(func_list) > 0
+			let cache_entry = {a:module : func_list}
+			execute 'redir >>' . s:file_cache
+			silent echon cache_entry
+			silent echon "\n"
+			redir END
+		endif
+	endif
+endfunction
+
+function s:ErlangUpdateCache(...)
+	for mod_name in a:000
+		if has_key(s:modules_cache, mod_name)
+			call remove(s:modules_cache, mod_name)
+		endif
+	endfor
+
+	" delete the old cache file
+	if filewritable(s:file_cache) == 1
+		call delete(s:file_cache)
+	endif
+
+	" write a new one
+	for mod_name in keys(s:modules_cache)
+		call s:WriteCache(mod_name)
+	endfor
+
+endfunction
+
 " Load the file cache the first time this script is loaded
 call s:ErlangLoadCache()
+
+" add the command for updating the cache entry
+command -nargs=+ ErlangUpdate silent call s:ErlangUpdateCache(<f-args>)
