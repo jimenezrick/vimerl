@@ -10,6 +10,9 @@
 " Completion program path
 let s:erlang_complete_file = expand('<sfile>:p:h') . '/erlang_complete.erl'
 
+let s:erlang_complete_cache_file = expand('<sfile>:p:h') . '/erlang_index'
+let s:erlang_cache_load = 0
+
 if !exists('g:erlang_completion_cache')
 	let g:erlang_completion_cache = 1
 endif
@@ -24,6 +27,11 @@ let s:erlang_blank_line        = '^\s*\(%.*\)\?$'
 
 " Main function for completion
 function erlang_complete#Complete(findstart, base)
+	if s:erlang_cache_load == 0
+		call s:ErlangLoadCache(a:base)
+		let s:erlang_cache_load = 1
+	endif
+
 	let lnum = line('.')
 	let column = col('.')
 	let line = strpart(getline('.'), 0, column - 1)
@@ -131,6 +139,16 @@ function s:ErlangFindExternalFunc(module, base)
 		endif
 	endfor
 
+	let func_lists = s:modules_cache[a:module]
+	if len(func_lists) > 0
+		let tmp_cache = {a:module : func_lists}
+		" write cache to file
+		exe "redir! >> " . s:erlang_complete_cache_file
+		silent echon tmp_cache
+		silent echon "\n"
+		redir END
+	endif
+
 	return []
 endfunction
 
@@ -153,6 +171,21 @@ function s:ErlangFindLocalFunc(base)
 		endif
 		let lnum = s:ErlangFindNextNonBlank(lnum)
 	endwhile
+
+	return []
+endfunction
+
+function s:ErlangLoadCache(base)
+	if filereadable(s:erlang_complete_cache_file)
+		for line in readfile(s:erlang_complete_cache_file)
+			let cache = eval(line)
+			for key in keys(cache)
+				" add module function list to the cache
+				let function_list = get(cache, key)
+				let s:modules_cache[key] = function_list
+			endfor
+		endfor
+	endif
 
 	return []
 endfunction
