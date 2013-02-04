@@ -158,8 +158,15 @@ parse_tokens(Tokens = [{'-', _} | _]) ->
     parse_attribute(Tokens, #state{});
 parse_tokens(Tokens = [{atom, _, _} | _]) ->
     parse_function(Tokens, #state{});
+parse_tokens(Tokens = [{T, _} | _]) when T == '['; T == '{'; T == '('; T = '<<' ->
+    parse_datum(Tokens, #state{});
 parse_tokens(Tokens) ->
     throw({parse_error, Tokens, #state{}, ?LINE}).
+
+parse_datum([T | Tokens], State) ->
+    parse_next(Tokens, indent(push(State, T, 0), 1));
+parse_datum([], State) ->
+    State.
 
 parse_attribute([T = {'-', _}, {atom, _, export} | Tokens], State = #state{stack = []}) ->
     parse_next(Tokens, push(State, T, -1));
