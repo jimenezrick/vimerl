@@ -158,7 +158,7 @@ parse_tokens(Tokens = [{'-', _} | _]) ->
     parse_attribute(Tokens, #state{});
 parse_tokens(Tokens = [{atom, _, _} | _]) ->
     parse_function(Tokens, #state{});
-parse_tokens(Tokens = [{T, _} | _]) when T == '['; T == '{'; T == '('; T = '<<' ->
+parse_tokens(Tokens = [{T, _} | _]) when T == '['; T == '{'; T == '(' ->
     parse_datum(Tokens, #state{});
 parse_tokens(Tokens) ->
     throw({parse_error, Tokens, #state{}, ?LINE}).
