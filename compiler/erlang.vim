@@ -48,7 +48,6 @@ function s:ShowErrors()
 		execute "setlocal makeprg=" . s:erlang_check_file . "\\ \%"
 	endif
 	silent make!
-	call s:ClearErrors()
 	for error in getqflist()
 		let item         = {}
 		let item["lnum"] = error.lnum
@@ -88,18 +87,22 @@ endfunction
 
 function s:EnableShowErrors()
 	if !s:autocmds_defined
-		autocmd BufWritePost *.erl call s:ShowErrors()
-		autocmd CursorHold   *.erl call s:ShowErrorMsg()
-		autocmd CursorMoved  *.erl call s:ShowErrorMsg()
+		augroup vimerl
+			autocmd!
+			autocmd BufWritePre *.erl call s:ClearErrors()
+			autocmd BufWritePost *.erl call s:ShowErrors()
+			autocmd CursorHold   *.erl call s:ShowErrorMsg()
+			autocmd CursorMoved  *.erl call s:ShowErrorMsg()
+		augroup END
 		let s:autocmds_defined = 1
 	endif
 endfunction
 
 function s:DisableShowErrors()
 	sign unplace *
-	autocmd! BufWritePost *.erl
-	autocmd! CursorHold   *.erl
-	autocmd! CursorMoved  *.erl
+	augroup vimerl
+		autocmd!
+	augroup END
 	let s:autocmds_defined = 0
 endfunction
 
