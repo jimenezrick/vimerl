@@ -80,47 +80,47 @@ syn match erlangBIF                          /\%(\<erlang:\)\@<=\%(append_elemen
 syn match erlangGBIF                         /\<erlang\%(:\w\)\@=/
 
 " Link Erlang stuff to Vim groups
-hi link erlangTodo           Todo
-hi link erlangString         String
-hi link erlangNoSpellString  String
-hi link erlangModifier       SpecialChar
-hi link erlangStringModifier SpecialChar
-hi link erlangComment        Comment
-hi link erlangAnnotation     Special
-hi link erlangVariable       Identifier
-hi link erlangInclude        Include
-hi link erlangRecordDef      Keyword
-hi link erlangAttribute      Keyword
-hi link erlangKeyword        Keyword
-hi link erlangMacro          Macro
-hi link erlangDefine         Define
-hi link erlangPreCondit      PreCondit
-hi link erlangPreProc        PreProc
-hi link erlangDelimiter      Delimiter
-hi link erlangBitDelimiter   Normal
-hi link erlangOperator       Operator
-hi link erlangConditional    Conditional
-hi link erlangGuard          Conditional
-hi link erlangBoolean        Boolean
-hi link erlangAtom           Constant
-hi link erlangRecord         Structure
-hi link erlangInteger        Number
-hi link erlangFloat          Number
-hi link erlangFloat          Number
-hi link erlangFloat          Number
-hi link erlangFloat          Number
-hi link erlangHex            Number
-hi link erlangFun            Keyword
-hi link erlangList           Delimiter
-hi link erlangTuple          Delimiter
-hi link erlangBinary         Keyword
-hi link erlangBitVariable    Identifier
-hi link erlangBitType        Type
-hi link erlangType           Type
-hi link erlangBitSize        Number
+hi def link erlangTodo           Todo
+hi def link erlangString         String
+hi def link erlangNoSpellString  String
+hi def link erlangModifier       SpecialChar
+hi def link erlangStringModifier SpecialChar
+hi def link erlangComment        Comment
+hi def link erlangAnnotation     Special
+hi def link erlangVariable       Identifier
+hi def link erlangInclude        Include
+hi def link erlangRecordDef      Keyword
+hi def link erlangAttribute      Keyword
+hi def link erlangKeyword        Keyword
+hi def link erlangMacro          Macro
+hi def link erlangDefine         Define
+hi def link erlangPreCondit      PreCondit
+hi def link erlangPreProc        PreProc
+hi def link erlangDelimiter      Delimiter
+hi def link erlangBitDelimiter   Normal
+hi def link erlangOperator       Operator
+hi def link erlangConditional    Conditional
+hi def link erlangGuard          Conditional
+hi def link erlangBoolean        Boolean
+hi def link erlangAtom           Constant
+hi def link erlangRecord         Structure
+hi def link erlangInteger        Number
+hi def link erlangFloat          Number
+hi def link erlangFloat          Number
+hi def link erlangFloat          Number
+hi def link erlangFloat          Number
+hi def link erlangHex            Number
+hi def link erlangFun            Keyword
+hi def link erlangList           Delimiter
+hi def link erlangTuple          Delimiter
+hi def link erlangBinary         Keyword
+hi def link erlangBitVariable    Identifier
+hi def link erlangBitType        Type
+hi def link erlangType           Type
+hi def link erlangBitSize        Number
 
 " Optional highlighting
 if g:erlang_highlight_bif
-	hi link erlangBIF    Keyword
-	hi link erlangGBIF   Keyword
+	hi def link erlangBIF    Keyword
+	hi def link erlangGBIF   Keyword
 endif
