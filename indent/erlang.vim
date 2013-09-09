@@ -4,7 +4,7 @@
 " Contributors: Edwin Fine <efine145_nospam01 at usa dot net>
 "               Pawel 'kTT' Salata <rockplayer.pl@gmail.com>
 "               Ricardo Catalinas Jiménez <jimenezrick@gmail.com>
-" Last Update:  2013-Jul-21
+" Last Update:  2013-Jun-01
 " License:      Vim license
 " URL:          https://github.com/hcs42/vim-erlang
 
