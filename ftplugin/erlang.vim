@@ -28,11 +28,16 @@ if !exists('g:erlang_folding')
 	let g:erlang_folding = 0
 endif
 
+"comment block folding options
+if !exists('g:erlang_folding_comments')
+	let g:erlang_folding_comments = 0
+endif
+
+
 let s:erlang_fun_begin = '^\(\a\w*\|[''][^'']*['']\)(.*$'
 let s:erlang_fun_end   = '^[^%]*\.\s*\(%.*\)\?$'
 
-let s:erlang_commentBlock_begin = '^%*\( @private\| @doc\| @doc .*\)$'
-let s:erlang_commentBlock_end   = '^%*\( @end\)$'
+let s:erlang_commentBlock = '^%%[^%]*$'
 
 function s:SetErlangOptions()
 	compiler erlang
@@ -62,40 +67,46 @@ function GetErlangFold(lnum)
 	"function folding
 	if line =~ s:erlang_fun_end
 		return '<1'
-	endif
-
-	if line =~ s:erlang_fun_begin && foldlevel(lnum - 1) == 1
+	elseif line =~ s:erlang_fun_begin && foldlevel(lnum - 1) == 1
 		return '1'
-	endif
-
-	if line =~ s:erlang_fun_begin
+	elseif line =~ s:erlang_fun_begin
 		return '>1'
 	endif
 
 	"comment block folding
-	if line =~ s:erlang_commentBlock_end
-		return '<1'
-	endif
-
-	if line =~ s:erlang_commentBlock_begin && foldlevel(lnum - 1) == 1
-		return '1'
-	endif
-
-	if line =~ s:erlang_commentBlock_begin
-		return '>1'
+	if g:erlang_folding_comments
+		if line =~ s:erlang_commentBlock && getline(lnum+1) =~ s:erlang_commentBlock
+			return '1'
+		elseif getline(lnum-1) =~ s:erlang_commentBlock
+			return '<1'
+		endif
 	endif
 
 	return '='
 endfunction
 
 function ErlangFoldText()
-	let line    = getline(v:foldstart)
+	let lnum = v:foldstart
+	let line = getline(v:foldstart)
 	let foldlen = v:foldend - v:foldstart + 1
-	let lines   = ' ' . foldlen . ' lines: ' . substitute(line, "[ \t]*", '', '')
-	if foldlen < 10
-		let lines = ' ' . lines
+	if line =~ s:erlang_commentBlock
+		let i=0
+		while i < foldlen
+			let cline = getline(lnum+i)
+			if cline =~ ".*@doc .*"
+				return v:folddashes . "DOC: " . substitute(cline, "[^@]*@doc ", '', '')
+			elseif cline =~ "% [^@]"
+				return v:folddashes . "DOC: " . substitute(cline, "[% \t]*", '', '')
+			endif
+			let i = i + 1 
+		endwhile
+	else
+		let lines   = ' ' . foldlen . ' lines: ' . substitute(line, "[ \t]*", '', '')
+		if foldlen < 10
+			let lines = ' ' . lines
+		endif
+		let retval = '+' . v:folddashes . lines
 	endif
-	let retval = '+' . v:folddashes . lines
 
 	return retval
 endfunction
