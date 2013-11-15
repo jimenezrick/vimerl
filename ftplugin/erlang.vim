@@ -3,8 +3,9 @@
 " Author:       Oscar Hellström <oscar@oscarh.net>
 " Contributors: Ricardo Catalinas Jiménez <jimenezrick@gmail.com>
 "               Eduardo Lopez (http://github.com/tapichu)
+"               Markus Mroch <mmroch@mr-pi.de> (https://mr-pi.de)
 " License:      Vim license
-" Version:      2012/11/25
+" Version:      2013-11-15
 
 if exists('b:did_ftplugin')
 	finish
@@ -29,6 +30,9 @@ endif
 
 let s:erlang_fun_begin = '^\(\a\w*\|[''][^'']*['']\)(.*$'
 let s:erlang_fun_end   = '^[^%]*\.\s*\(%.*\)\?$'
+
+let s:erlang_commentBlock_begin = '^%*\( @private\| @doc\| @doc .*\)$'
+let s:erlang_commentBlock_end   = '^%*\( @end\)$'
 
 function s:SetErlangOptions()
 	compiler erlang
@@ -55,6 +59,7 @@ function GetErlangFold(lnum)
 	let lnum = a:lnum
 	let line = getline(lnum)
 
+	"function folding
 	if line =~ s:erlang_fun_end
 		return '<1'
 	endif
@@ -64,6 +69,19 @@ function GetErlangFold(lnum)
 	endif
 
 	if line =~ s:erlang_fun_begin
+		return '>1'
+	endif
+
+	"comment block folding
+	if line =~ s:erlang_commentBlock_end
+		return '<1'
+	endif
+
+	if line =~ s:erlang_commentBlock_begin && foldlevel(lnum - 1) == 1
+		return '1'
+	endif
+
+	if line =~ s:erlang_commentBlock_begin
 		return '>1'
 	endif
 
