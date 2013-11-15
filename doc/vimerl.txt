@@ -74,7 +74,7 @@ Note: indenting a large block of lines with the |=| or |v_=| command will take
 2.2 Code folding                                              *vimerl-folding*
 
 In order to enable/disable code folding see the |'foldenable'| Vim option and
-also enable the |'erlang_folding'| option.
+also enable the |'erlang_folding'| and |'erlang_folding_comments'| option.
 
 ------------------------------------------------------------------------------
 2.3 Code omni completion                              *vimerl-omni-completion*
@@ -186,6 +186,14 @@ The following options offer the possibility to customize the plugin behaviour.
 This option controls whether automatic code folding is enabled or disabled
 (default: 0, values: 0 or 1): >
 	:let erlang_folding = 0
+
+------------------------------------------------------------------------------
+                                                   *'erlang_folding_comments'*
+
+This option controls whether automatic comment block (multiple lines,
+starting with '%%') folding is enabled or disabled
+(default: 0, values: 0 or 1): >
+	:let erlang_folding_comments = 0
 
 ------------------------------------------------------------------------------
                                                       *'erlang_highlight_bif'*
