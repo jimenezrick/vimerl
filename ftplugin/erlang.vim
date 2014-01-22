@@ -27,11 +27,18 @@ if !exists('g:erlang_folding')
 	let g:erlang_folding = 0
 endif
 
+if !exists('g:erlang_compiler')
+	let g:erlang_compiler = 1
+endif
+
 let s:erlang_fun_begin = '^\(\a\w*\|[''][^'']*['']\)(.*$'
 let s:erlang_fun_end   = '^[^%]*\.\s*\(%.*\)\?$'
 
 function s:SetErlangOptions()
-	compiler erlang
+	if g:erlang_compiler
+		compiler erlang
+	endif
+
 	if version >= 700
 		setlocal omnifunc=erlang_complete#Complete
 	endif
