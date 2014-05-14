@@ -79,6 +79,9 @@ syn match erlangBIF                          /\%([^:0-9A-Za-z_]\|\<erlang:\|^\)\
 syn match erlangBIF                          /\%(\<erlang:\)\@<=\%(append_element\|bump_reductions\|cancel_timer\|decode_packet\|display\|function_exported\|fun_info\|fun_to_list\|get_cookie\|get_stacktrace\|hash\|is_builtin\|loaded\|load_nif\|localtime\|localtime_to_universaltime\|make_tuple\|memory\|monitor_node\|phash\|port_call\|port_info\|ports\|port_to_list\|process_display\|read_timer\|ref_to_list\|resume_process\|send\|send_after\|send_nosuspend\|set_cookie\|start_timer\|suspend_process\|system_flag\|system_info\|system_monitor\|system_profile\|trace\|trace_delivered\|trace_info\|trace_pattern\|universaltime\|universaltime_to_localtime\|yield\)(\@=/
 syn match erlangGBIF                         /\<erlang\%(:\w\)\@=/
 
+" Functions
+syn match erlangFunc                        "^\w\+\s*("
+
 " Link Erlang stuff to Vim groups
 hi def link erlangTodo           Todo
 hi def link erlangString         String
@@ -118,6 +121,7 @@ hi def link erlangBitVariable    Identifier
 hi def link erlangBitType        Type
 hi def link erlangType           Type
 hi def link erlangBitSize        Number
+hi def link erlangFunc           Function
 
 " Optional highlighting
 if g:erlang_highlight_bif
