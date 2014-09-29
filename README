@@ -28,7 +28,11 @@ Copy the content of the tarball to your `.vim'. Don't forget to run
 `:helptags' if you are not using Pathogen.
 
 Vimerl requires to have a recent version of Erlang installed in your
-system with `escript' in your $PATH.
+system with `escript' in your $PATH. (IF YOU DO NOT INSTALLED ERLANG, 
+YOU WILL SEE ERROR MESSAGE LIKE: Error detected while processing 
+function 65_SetErlangOptions:
+line 17:
+E518: Unknown option: not )
 
 With a Vim version older than 7.3 syntax checking will be disabled as
 some required features won't be available.
