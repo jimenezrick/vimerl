@@ -39,7 +39,9 @@ rebar_opts(RebarFile) ->
             RebarDepsDir = proplists:get_value(deps_dir, Terms, "deps"),
             code:add_pathsa(filelib:wildcard(RebarDepsDir ++ "/*/ebin")),
             IncludeDeps = {i, filename:join(Dir, RebarDepsDir)},
-            proplists:get_value(erl_opts, Terms, []) ++ [IncludeDeps];
+            Vals = proplists:get_value(
+              erl_opts, Terms, []) ++ [IncludeDeps],
+            [ X || X <- Vals, element(1, X) =/= parse_transform ];
         {error, _} when RebarFile == "rebar.config" ->
             [];
         {error, _} ->
