@@ -11,9 +11,19 @@ main([File]) ->
             report,
             {i, Dir ++ "/include"}],
     RebarFile = rebar_file(Dir),
-    RebarOpts = rebar_opts(Dir ++ "/" ++ RebarFile),
+    RebarOpts0 = rebar_opts(filename:join(Dir, RebarFile)),
+    RebarOpts = case lists:reverse(filename:split(Dir)) of
+                    [_, "apps" | AppsRootRev] ->
+                        %% Global rebar config comes second
+                        AppsRoot = filename:join(lists:reverse(AppsRootRev)),
+                        [{i, filename:join(lists:reverse(["apps" | AppsRootRev]))} | RebarOpts0]
+                        ++ rebar_opts(filename:join(AppsRoot, rebar_file(AppsRoot)));
+                    _ ->
+                        RebarOpts0
+                end,
+
     code:add_patha(filename:absname("ebin")),
-    compile:file(File, Defs ++ RebarOpts);
+    compile:file(filename:absname(File), Defs ++ RebarOpts);
 main(_) ->
     io:format("Usage: ~s <file>~n", [escript:script_name()]),
     halt(1).
@@ -34,17 +44,24 @@ rebar_opts(RebarFile) ->
             RebarLibDirs = proplists:get_value(lib_dirs, Terms, []),
             lists:foreach(
                 fun(LibDir) ->
-                        code:add_pathsa(filelib:wildcard(LibDir ++ "/*/ebin"))
+                        code:add_pathsa(filelib:wildcard(filename:join([LibDir, "*", "ebin"])))
                 end, RebarLibDirs),
             RebarDepsDir = proplists:get_value(deps_dir, Terms, "deps"),
-            code:add_pathsa(filelib:wildcard(RebarDepsDir ++ "/*/ebin")),
-            IncludeDeps = {i, filename:join(Dir, RebarDepsDir)},
-            proplists:get_value(erl_opts, Terms, []) ++ [IncludeDeps];
+            code:add_pathsa(filelib:wildcard(filename:join([Dir, RebarDepsDir, "*", "ebin"]))),
+            IncludeDeps = include_deps(filename:join(Dir, RebarDepsDir)),
+            proplists:get_value(erl_opts, Terms, []) ++ IncludeDeps;
         {error, _} when RebarFile == "rebar.config" ->
             [];
         {error, _} ->
             rebar_opts("rebar.config")
     end.
+
+include_deps(DepsDir) ->
+    [{i, DepsDir} |
+     lists:flatmap(
+       fun(SubAppsDir) ->
+               include_deps(SubAppsDir)
+       end, filelib:wildcard(filename:join(DepsDir, "*/apps")))].
 
 get_root(Dir) ->
     Path = filename:split(filename:absname(Dir)),
