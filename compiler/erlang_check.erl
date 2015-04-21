@@ -14,9 +14,11 @@ main([File]) ->
     RebarOpts0 = rebar_opts(filename:join(Dir, RebarFile)),
     RebarOpts = case lists:reverse(filename:split(Dir)) of
                     [_, "apps" | AppsRootRev] ->
-                        %% Global rebar config comes second
+                        %% We are only a subapp!
                         AppsRoot = filename:join(lists:reverse(AppsRootRev)),
-                        [{i, filename:join(lists:reverse(["apps" | AppsRootRev]))} | RebarOpts0]
+                        AppsDir = filename:join(lists:reverse(["apps" | AppsRootRev])),
+                        code:add_pathsa(filelib:wildcard(filename:join([AppsDir, "*", "ebin"]))),
+                        [{i, AppsDir} | RebarOpts0]
                         ++ rebar_opts(filename:join(AppsRoot, rebar_file(AppsRoot)));
                     _ ->
                         RebarOpts0
@@ -46,9 +48,8 @@ rebar_opts(RebarFile) ->
                 fun(LibDir) ->
                         code:add_pathsa(filelib:wildcard(filename:join([LibDir, "*", "ebin"])))
                 end, RebarLibDirs),
-            RebarDepsDir = proplists:get_value(deps_dir, Terms, "deps"),
-            code:add_pathsa(filelib:wildcard(filename:join([Dir, RebarDepsDir, "*", "ebin"]))),
-            IncludeDeps = include_deps(filename:join(Dir, RebarDepsDir)),
+            RebarDepsDir = proplists:get_value(deps_dir, Terms, "deps"), 
+            IncludeDeps = process_deps(filename:join(Dir, RebarDepsDir)),
             proplists:get_value(erl_opts, Terms, []) ++ IncludeDeps;
         {error, _} when RebarFile == "rebar.config" ->
             [];
@@ -56,11 +57,12 @@ rebar_opts(RebarFile) ->
             rebar_opts("rebar.config")
     end.
 
-include_deps(DepsDir) ->
+process_deps(DepsDir) ->
+    code:add_pathsa(filelib:wildcard(filename:join([DepsDir, "*", "ebin"]))),
     [{i, DepsDir} |
      lists:flatmap(
        fun(SubAppsDir) ->
-               include_deps(SubAppsDir)
+               process_deps(SubAppsDir)
        end, filelib:wildcard(filename:join(DepsDir, "*/apps")))].
 
 get_root(Dir) ->
