@@ -11,9 +11,13 @@ main([File]) ->
             report,
             {i, Dir ++ "/include"}],
     RebarFile = rebar_file(Dir),
-    RebarOpts = rebar_opts(Dir ++ "/" ++ RebarFile),
+    AbsRebarFile = Dir ++ "/" ++ RebarFile,
+    Opts = case filelib:is_file(AbsRebarFile) of
+               true -> rebar_opts(AbsRebarFile);
+               false -> deps_opts(Dir ++ "/deps")
+           end,
     code:add_patha(filename:absname("ebin")),
-    compile:file(File, Defs ++ RebarOpts);
+    compile:file(File, Defs ++ Opts);
 main(_) ->
     io:format("Usage: ~s <file>~n", [escript:script_name()]),
     halt(1).
@@ -26,6 +30,15 @@ rebar_file(Dir) ->
         _ ->
             "rebar.config"
     end.
+
+deps_opts(DepsDir) ->
+    case filelib:is_dir(DepsDir) of
+        false ->
+            [];
+        true ->
+            code:add_pathsa(filelib:wildcard(DepsDir ++ "/*/ebin"))
+    end,
+    [{i, DepsDir ++ "/"}].
 
 rebar_opts(RebarFile) ->
     Dir = get_root(filename:dirname(RebarFile)),
