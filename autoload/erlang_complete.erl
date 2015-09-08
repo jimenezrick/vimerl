@@ -11,7 +11,8 @@ main([ModName]) ->
                         code:add_pathsa(filelib:wildcard(LibDir ++ "/*/ebin"))
                 end, RebarLibDirs),
             RebarDepsDir = proplists:get_value(deps_dir, Terms, "deps"),
-            code:add_pathsa(filelib:wildcard(RebarDepsDir ++ "/*/ebin"));
+            code:add_pathsa(filelib:wildcard(RebarDepsDir ++ "/*/ebin")),
+            code:add_pathsa(filelib:wildcard("_build/**/ebin"));
         {error, _} ->
             true
     end,
