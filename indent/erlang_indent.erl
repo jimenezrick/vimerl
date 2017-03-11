@@ -18,6 +18,7 @@
 -define(CLOSE_BRACKET(T), ?IS(T, ')'); ?IS(T, '}'); ?IS(T, ']'); ?IS(T, '>>')).
 -define(BRANCH_EXPR(T), ?IS(T, 'fun'); ?IS(T, 'receive'); ?IS(T, 'if'); ?IS(T, 'case'); ?IS(T, 'try')).
 
+
 -record(state, {stack = [], tabs = [0], cols = [none]}).
 
 main(["-f", File, Line]) ->
@@ -223,60 +224,62 @@ parse_next2([T = {'=', _} | Tokens], State) ->
     parse_next(Tokens, push(State, T, 1, column(T) + 1));
 parse_next2(Tokens = [T1 | _], State = #state{stack = [T2 | _]}) when ?IS(T2, '='), not ?IS(T1, ','), not ?IS(T1, ';') ->
     parse_next2(Tokens, pop(State));
-parse_next2([{',', _} | Tokens], State = #state{stack = [T | _]}) when ?IS(T, '=') ->
+parse_next2(A,B) -> parse_next3(A,B).
+
+parse_next3([{',', _} | Tokens], State = #state{stack = [T | _]}) when ?IS(T, '=') ->
     parse_next(Tokens, pop(State));
-parse_next2([{',', _} | Tokens], State) ->
+parse_next3([{',', _} | Tokens], State) ->
     parse_next(Tokens, State);
-parse_next2(Tokens = [{';', _} | _], State = #state{stack = [T | _]}) when ?IS(T, '=') ->
+parse_next3(Tokens = [{';', _} | _], State = #state{stack = [T | _]}) when ?IS(T, '=') ->
     parse_next2(Tokens, pop(State));
-parse_next2([{';', _} | Tokens], State = #state{stack = [T1, T2 | _]}) when ?IS(T1, '->'), ?IS(T2, atom) ->
+parse_next3([{';', _} | Tokens], State = #state{stack = [T1, T2 | _]}) when ?IS(T1, '->'), ?IS(T2, atom) ->
     parse_function(Tokens, pop(pop(State)));
-parse_next2([{';', _} | Tokens], State = #state{stack = [{'->', _}, T | _]}) when ?BRANCH_EXPR(T) ->
+parse_next3([{';', _} | Tokens], State = #state{stack = [{'->', _}, T | _]}) when ?BRANCH_EXPR(T) ->
     parse_next(Tokens, indent_after(Tokens, pop(State), 2));
-parse_next2([{';', _} | Tokens], State) ->
+parse_next3([{';', _} | Tokens], State) ->
     parse_next(Tokens, State);
-parse_next2([{'fun', _}, T | Tokens], State) when not ?IS(T, '(') ->
+parse_next3([{'fun', _}, T | Tokens], State) when not ?IS(T, '(') ->
     parse_next(Tokens, State);
-parse_next2([T | Tokens], State) when ?IS(T, 'fun'); ?IS(T, 'receive'); ?IS(T, 'if') ->
+parse_next3([T | Tokens], State) when ?IS(T, 'fun'); ?IS(T, 'receive'); ?IS(T, 'if') ->
     parse_next(Tokens, indent_after(Tokens, push(State, T, 1), 2));
-parse_next2([T | Tokens], State) when ?BRANCH_EXPR(T) ->
+parse_next3([T | Tokens], State) when ?BRANCH_EXPR(T) ->
     parse_next(Tokens, push(State, T, 1));
-parse_next2([T | Tokens], State) when ?IS(T, 'of') ->
+parse_next3([T | Tokens], State) when ?IS(T, 'of') ->
     parse_next(Tokens, indent_after(Tokens, State, 2));
-parse_next2([T1 = {'->', _} | Tokens], State = #state{stack = [T2]}) when ?IS(T2, '-') ->
+parse_next3([T1 = {'->', _} | Tokens], State = #state{stack = [T2]}) when ?IS(T2, '-') ->
     parse_next(Tokens, push(State, T1, 0));
-parse_next2([T1 = {'->', _} | Tokens], State = #state{stack = [T2]}) when ?IS(T2, atom) ->
+parse_next3([T1 = {'->', _} | Tokens], State = #state{stack = [T2]}) when ?IS(T2, atom) ->
     parse_next(Tokens, push(unindent(State), T1, 0));
-parse_next2([T1 = {'->', _} | Tokens], State = #state{stack = [T2 | _]}) when ?BRANCH_EXPR(T2) ->
+parse_next3([T1 = {'->', _} | Tokens], State = #state{stack = [T2 | _]}) when ?BRANCH_EXPR(T2) ->
     parse_next(Tokens, push(unindent(State), T1, 1));
-parse_next2([{'catch', _} | Tokens], State = #state{stack = [T1, T2 | _]}) when
+parse_next3([{'catch', _} | Tokens], State = #state{stack = [T1, T2 | _]}) when
         not ?IS(T1, 'try'), not (?IS(T1, '->') and ?IS(T2, 'try')) ->
     parse_next(Tokens, State);
-parse_next2([T | Tokens], State = #state{stack = [{'try', _} | _]}) when ?IS(T, 'catch') ->
+parse_next3([T | Tokens], State = #state{stack = [{'try', _} | _]}) when ?IS(T, 'catch') ->
     parse_next(Tokens, indent_after(Tokens, State, 2));
-parse_next2([T | Tokens], State = #state{stack = [{'->', _}, {'try', _} | _]}) when ?IS(T, 'catch') ->
+parse_next3([T | Tokens], State = #state{stack = [{'->', _}, {'try', _} | _]}) when ?IS(T, 'catch') ->
     parse_next(Tokens, indent_after(Tokens, pop(State), 2));
-parse_next2([T | Tokens], State = #state{stack = [{'try', _} | _]}) when ?IS(T, 'after') ->
+parse_next3([T | Tokens], State = #state{stack = [{'try', _} | _]}) when ?IS(T, 'after') ->
     parse_next(Tokens, State);
-parse_next2([T | Tokens], State = #state{stack = [{'receive', _} | _]}) when ?IS(T, 'after') ->
+parse_next3([T | Tokens], State = #state{stack = [{'receive', _} | _]}) when ?IS(T, 'after') ->
     parse_next(Tokens, indent_after(Tokens, unindent(State), 2));
-parse_next2([T | Tokens], State = #state{stack = [{'->', _}, {'receive', _} | _]}) when ?IS(T, 'after') ->
+parse_next3([T | Tokens], State = #state{stack = [{'->', _}, {'receive', _} | _]}) when ?IS(T, 'after') ->
     parse_next(Tokens, indent_after(Tokens, pop(State), 2));
-parse_next2([T | Tokens], State = #state{stack = [{'->', _} | _]}) when ?IS(T, 'after') ->
+parse_next3([T | Tokens], State = #state{stack = [{'->', _} | _]}) when ?IS(T, 'after') ->
     parse_next(Tokens, pop(State));
-parse_next2([T | Tokens], State) when ?IS(T, 'begin') ->
+parse_next3([T | Tokens], State) when ?IS(T, 'begin') ->
     parse_next(Tokens, push(State, T, 1));
-parse_next2([{'end', _} | Tokens], State = #state{stack = [T | _]}) when ?IS(T, 'begin'); ?IS(T, 'try') ->
+parse_next3([{'end', _} | Tokens], State = #state{stack = [T | _]}) when ?IS(T, 'begin'); ?IS(T, 'try') ->
     parse_next(Tokens, pop(State));
-parse_next2([{'end', _} | Tokens], State = #state{stack = [{'->', _} | _]}) ->
+parse_next3([{'end', _} | Tokens], State = #state{stack = [{'->', _} | _]}) ->
     parse_next(Tokens, pop(pop(State)));
-parse_next2([{dot, _} | Tokens], State = #state{stack = [T]}) when ?IS(T, '-') ->
+parse_next3([{dot, _} | Tokens], State = #state{stack = [T]}) when ?IS(T, '-') ->
     parse_next(Tokens, pop(State));
-parse_next2([{dot, _} | Tokens], State = #state{stack = [T, _]}) when ?IS(T, '->') ->
+parse_next3([{dot, _} | Tokens], State = #state{stack = [T, _]}) when ?IS(T, '->') ->
     parse_next(Tokens, pop(pop(State)));
-parse_next2([], State) ->
+parse_next3([], State) ->
     State;
-parse_next2(Tokens, State) ->
+parse_next3(Tokens, State) ->
     throw({parse_error, Tokens, State, ?LINE}).
 
 indent(State, OffTab) ->
